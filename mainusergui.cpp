@@ -50,6 +50,9 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
     //Conectamos Slots del objeto "Tiva" con Slots de nuestra aplicacion (o con widgets)
     connect(&tiva,SIGNAL(statusChanged(int,QString)),this,SLOT(tivaStatusChanged(int,QString)));
     connect(&tiva,SIGNAL(messageReceived(uint8_t,QByteArray)),this,SLOT(messageReceived(uint8_t,QByteArray)));
+
+    ui->led_der->setChecked(false);
+    ui->led_izq->setChecked(false);
 }
 
 MainUserGUI::~MainUserGUI() // Destructor de la clase
@@ -95,14 +98,19 @@ void MainUserGUI::on_pushButton_clicked()
 void MainUserGUI::on_colorWheel_colorChanged(const QColor &arg1)
 {
     //Poner aqui el codigo para pedirle al objeto "tiva" que envie el mensaje correspondiente
-
-
+    MESSAGE_COLOR_PARAMETER parametro;
+    parametro.red = arg1.red();
+    parametro.green = arg1.green();
+    parametro.blue = arg1.blue();
+    tiva.sendMessage(MESSAGE_COLOR,&parametro,sizeof(parametro));
 }
 
 void MainUserGUI::on_Knob_valueChanged(double value)
 {
     //Este mensaje se envia "mal" intencionadamente (no se corrsponde con lo que el microcontrolador pretende recibir)
-    tiva.sendMessage(MESSAGE_LED_PWM_BRIGHTNESS,QByteArray::fromRawData((char *)&value,sizeof(value)));
+    MESSAGE_LED_PWM_BRIGHTNESS_PARAMETER parametro;
+    parametro.rIntensity=value;
+    tiva.sendMessage(MESSAGE_LED_PWM_BRIGHTNESS,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
 }
 
 void MainUserGUI::on_ADCButton_clicked()
@@ -179,6 +187,22 @@ void MainUserGUI::messageReceived(uint8_t message_type, QByteArray datos)
 
         }
         break;
+        case MESSAGE_BUTTON:
+        {   //Recepcion de la respuesta al ping desde la TIVA
+            MESSAGE_BUTTON_PARAMETER parametro;
+            if (check_and_extract_command_param(datos.data(), datos.size(), &parametro, sizeof(parametro))>0)
+            {
+                //ui->led_der->setChecked(true);
+                //ui->led_izq->setChecked(true);
+                ui->led_izq->setChecked(parametro.left_button);
+                ui->led_der->setChecked(parametro.right_button);
+            }else
+            {
+                 ui->statusLabel->setText(tr("Status: MSG %1, recibí %2 B y esperaba %3").arg(message_type).arg(datos.size()).arg(sizeof(parametro)));
+            }
+        }
+        break;
+
 
         default:
             //Notifico que ha llegado un tipo de mensaje desconocido
@@ -227,3 +251,29 @@ void MainUserGUI::tivaStatusChanged(int status,QString message)
 
 
 
+
+void MainUserGUI::on_comboBox_currentIndexChanged(int index)
+{
+    MESSAGE_MODE_PARAMETER parametro;
+    parametro.index=index;
+    tiva.sendMessage(MESSAGE_MODE,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
+}
+
+void MainUserGUI::on_pushButton_2_clicked()
+{
+
+    tiva.sendMessage(MESSAGE_BUTTON,NULL,0);
+}
+
+
+void MainUserGUI::on_comboBox_2_currentIndexChanged(int index)
+{
+    if(index)
+    {
+        ui->pushButton_2->setEnabled(false);
+
+    }else
+    {
+        ui->pushButton_2->setEnabled(true);
+    }
+}
