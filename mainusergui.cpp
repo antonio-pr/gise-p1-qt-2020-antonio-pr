@@ -266,14 +266,18 @@ void MainUserGUI::on_pushButton_2_clicked()
 }
 
 
-void MainUserGUI::on_comboBox_2_currentIndexChanged(int index)
+/*void MainUserGUI::on_comboBox_2_currentIndexChanged(int index)
 {
+    //MESSAGE_BUTTON_MODE_PARAMETER parametro;
     if(index)
     {
         ui->pushButton_2->setEnabled(false);
+       // parametro.mode=true;
 
     }else
     {
         ui->pushButton_2->setEnabled(true);
+       // parametro.mode=false;
     }
-}
+    //tiva.sendMessage(MESSAGE_BUTTON_MODE,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
+}*/
