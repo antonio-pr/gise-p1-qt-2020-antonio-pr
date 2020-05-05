@@ -179,6 +179,8 @@ void MainUserGUI::messageReceived(uint8_t message_type, QByteArray datos)
                 ui->lcdCh2->display(((double)parametro.chan2)*3.3/4096.0);
                 ui->lcdCh3->display(((double)parametro.chan3)*3.3/4096.0);
                 ui->lcdCh4->display(((double)parametro.chan4)*3.3/4096.0);
+                ui->lcdCh5->display(((double)parametro.chan5)*3.3/4096.0);
+                ui->lcdCh6->display(((double)parametro.chan6)*3.3/4096.0);
             }
             else
             {   //Si el tamanho de los datos no es correcto emito la senhal statusChanged(...) para reportar un error
@@ -192,10 +194,21 @@ void MainUserGUI::messageReceived(uint8_t message_type, QByteArray datos)
             MESSAGE_BUTTON_PARAMETER parametro;
             if (check_and_extract_command_param(datos.data(), datos.size(), &parametro, sizeof(parametro))>0)
             {
-                //ui->led_der->setChecked(true);
-                //ui->led_izq->setChecked(true);
                 ui->led_izq->setChecked(parametro.left_button);
                 ui->led_der->setChecked(parametro.right_button);
+            }else
+            {
+                 ui->statusLabel->setText(tr("Status: MSG %1, recibí %2 B y esperaba %3").arg(message_type).arg(datos.size()).arg(sizeof(parametro)));
+            }
+        }
+        break;
+
+        case MESSAGE_LED_PWM_BRIGHTNESS:
+        {
+            MESSAGE_LED_PWM_BRIGHTNESS_PARAMETER parametro;
+            if (check_and_extract_command_param(datos.data(), datos.size(), &parametro, sizeof(parametro))>0)
+            {
+               ui->Knob->setValue(parametro.rIntensity);
             }else
             {
                  ui->statusLabel->setText(tr("Status: MSG %1, recibí %2 B y esperaba %3").arg(message_type).arg(datos.size()).arg(sizeof(parametro)));
@@ -269,12 +282,12 @@ void MainUserGUI::on_pushButton_2_clicked()
 void MainUserGUI::on_comboBox_2_currentIndexChanged(int index)
 {
     MESSAGE_BUTTON_MODE_PARAMETER parametro;
-    if(index)
+    if(index)//MODO AUTO
     {
         ui->pushButton_2->setEnabled(false);
         parametro.mode=true;
 
-    }else
+    }else//MODO SONDEO
     {
         ui->pushButton_2->setEnabled(true);
         parametro.mode=false;
