@@ -40,6 +40,10 @@ private slots:
 
     void on_comboBox_2_currentIndexChanged(int index);
 
+    void on_comboBox_3_currentIndexChanged(int index);
+
+    void on_factor_promediado_currentIndexChanged(int index);
+
 private:
     // funciones privadas
     void processError(const QString &s);

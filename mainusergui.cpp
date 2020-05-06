@@ -3,6 +3,7 @@
 #include <QSerialPort>      // Comunicacion por el puerto serie
 #include <QSerialPortInfo>  // Comunicacion por el puerto serie
 #include <QMessageBox>      // Se deben incluir cabeceras a los componentes que se vayan a crear en la clase
+#include <QVariant>
 // y que no estén incluidos en el interfaz gráfico. En este caso, la ventana de PopUp <QMessageBox>
 // que se muestra al recibir un PING de respuesta
 
@@ -186,9 +187,9 @@ void MainUserGUI::messageReceived(uint8_t message_type, QByteArray datos)
             {   //Si el tamanho de los datos no es correcto emito la senhal statusChanged(...) para reportar un error
                 ui->statusLabel->setText(tr("Status: MSG %1, recibí %2 B y esperaba %3").arg(message_type).arg(datos.size()).arg(sizeof(parametro)));
             }
-
         }
         break;
+
         case MESSAGE_BUTTON:
         {   //Recepcion de la respuesta al ping desde la TIVA
             MESSAGE_BUTTON_PARAMETER parametro;
@@ -293,4 +294,26 @@ void MainUserGUI::on_comboBox_2_currentIndexChanged(int index)
         parametro.mode=false;
     }
     tiva.sendMessage(MESSAGE_BUTTON_MODE,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
+}
+
+void MainUserGUI::on_comboBox_3_currentIndexChanged(int index)
+{
+    MESSAGE_ADC_MODE_PARAMETER parametro;
+    parametro.index=index;
+    if(index==0)
+    {
+        ui->ADCButton->setEnabled(true);
+    }else
+    {
+        ui->ADCButton->setEnabled(false);
+    }
+
+    tiva.sendMessage(MESSAGE_ADC_MODE,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
+}
+
+void MainUserGUI::on_factor_promediado_currentIndexChanged(int index)
+{
+    MESSAGE_FACTOR_PARAMETER parametro;
+    parametro.factor=ui->factor_promediado->currentText().toInt();
+    tiva.sendMessage(MESSAGE_FACTOR,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
 }
