@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>708</width>
-    <height>468</height>
+    <width>821</width>
+    <height>487</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,9 +17,9 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>40</y>
-     <width>711</width>
-     <height>391</height>
+     <y>30</y>
+     <width>831</width>
+     <height>411</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -137,8 +137,8 @@
     <widget class="QPushButton" name="ADCButton">
      <property name="geometry">
       <rect>
-       <x>260</x>
-       <y>260</y>
+       <x>100</x>
+       <y>40</y>
        <width>75</width>
        <height>23</height>
       </rect>
@@ -150,15 +150,15 @@
     <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
-       <x>160</x>
-       <y>30</y>
-       <width>331</width>
-       <height>161</height>
+       <x>0</x>
+       <y>310</y>
+       <width>206</width>
+       <height>54</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
-       <widget class="QLCDNumber" name="lcdCh1">
+      <item row="1" column="1">
+       <widget class="QLCDNumber" name="lcdCh4">
         <property name="frameShape">
          <enum>QFrame::Box</enum>
         </property>
@@ -201,8 +201,18 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QLCDNumber" name="lcdCh3">
+      <item row="0" column="2">
+       <widget class="QLCDNumber" name="lcdCh5">
+        <property name="frameShadow">
+         <enum>QFrame::Plain</enum>
+        </property>
+        <property name="segmentStyle">
+         <enum>QLCDNumber::Flat</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLCDNumber" name="lcdCh1">
         <property name="frameShape">
          <enum>QFrame::Box</enum>
         </property>
@@ -233,18 +243,8 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QLCDNumber" name="lcdCh5">
-        <property name="frameShadow">
-         <enum>QFrame::Plain</enum>
-        </property>
-        <property name="segmentStyle">
-         <enum>QLCDNumber::Flat</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLCDNumber" name="lcdCh4">
+      <item row="0" column="1">
+       <widget class="QLCDNumber" name="lcdCh3">
         <property name="frameShape">
          <enum>QFrame::Box</enum>
         </property>
@@ -270,7 +270,7 @@
     <widget class="QComboBox" name="factor_promediado">
      <property name="geometry">
       <rect>
-       <x>30</x>
+       <x>10</x>
        <y>100</y>
        <width>69</width>
        <height>22</height>
@@ -305,7 +305,7 @@
     <widget class="QLabel" name="label_5">
      <property name="geometry">
       <rect>
-       <x>30</x>
+       <x>10</x>
        <y>80</y>
        <width>47</width>
        <height>13</height>
@@ -318,10 +318,10 @@
     <widget class="QComboBox" name="comboBox_3">
      <property name="geometry">
       <rect>
-       <x>30</x>
+       <x>10</x>
        <y>40</y>
-       <width>69</width>
-       <height>22</height>
+       <width>81</width>
+       <height>21</height>
       </rect>
      </property>
      <item>
@@ -331,12 +331,12 @@
      </item>
      <item>
       <property name="text">
-       <string>GPIO (PF4)</string>
+       <string>GPIO (IZQ)</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>GPIO (PF0)</string>
+       <string>GPIO (DER)</string>
       </property>
      </item>
      <item>
@@ -348,7 +348,7 @@
     <widget class="QLabel" name="label_6">
      <property name="geometry">
       <rect>
-       <x>30</x>
+       <x>10</x>
        <y>20</y>
        <width>47</width>
        <height>13</height>
@@ -356,6 +356,54 @@
      </property>
      <property name="text">
       <string>Trigger</string>
+     </property>
+    </widget>
+    <widget class="QwtKnob" name="Frecuencia">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>150</y>
+       <width>150</width>
+       <height>150</height>
+      </rect>
+     </property>
+     <property name="lowerBound">
+      <double>1.000000000000000</double>
+     </property>
+     <property name="upperBound">
+      <double>8000.000000000000000</double>
+     </property>
+     <property name="scaleMaxMajor">
+      <number>8</number>
+     </property>
+    </widget>
+    <widget class="QwtPlot" name="qwtPlot">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>-1</y>
+       <width>561</width>
+       <height>371</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="Muestreo">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>40</y>
+       <width>70</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Muestreo</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
      </property>
     </widget>
    </widget>
@@ -538,6 +586,11 @@
    <class>color_widgets::ColorWheel</class>
    <extends>QWidget</extends>
    <header>color_wheel.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>QwtPlot</class>
+   <extends>QFrame</extends>
+   <header>qwt_plot.h</header>
   </customwidget>
   <customwidget>
    <class>QwtKnob</class>

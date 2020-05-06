@@ -54,6 +54,9 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
 
     ui->led_der->setChecked(false);
     ui->led_izq->setChecked(false);
+
+    ui->Muestreo->setVisible(false);
+    ui->Frecuencia->setVisible(false);
 }
 
 MainUserGUI::~MainUserGUI() // Destructor de la clase
@@ -302,10 +305,20 @@ void MainUserGUI::on_comboBox_3_currentIndexChanged(int index)
     parametro.index=index;
     if(index==0)
     {
-        ui->ADCButton->setEnabled(true);
+        ui->ADCButton->setVisible(true);
     }else
     {
-        ui->ADCButton->setEnabled(false);
+        ui->ADCButton->setVisible(false);
+    }
+
+    if(index==3)
+    {
+        ui->Muestreo->setVisible(true);
+        ui->Frecuencia->setVisible(true);
+    }else
+    {
+        ui->Muestreo->setVisible(false);
+        ui->Frecuencia->setVisible(false);
     }
 
     tiva.sendMessage(MESSAGE_ADC_MODE,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
@@ -316,4 +329,12 @@ void MainUserGUI::on_factor_promediado_currentIndexChanged(int index)
     MESSAGE_FACTOR_PARAMETER parametro;
     parametro.factor=ui->factor_promediado->currentText().toInt();
     tiva.sendMessage(MESSAGE_FACTOR,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
+}
+
+void MainUserGUI::on_Muestreo_toggled(bool checked)
+{
+    MESSAGE_TIMER_ADC_PARAMETER parametro;
+    parametro.on=ui->Muestreo->isChecked();
+    parametro.frecuencia=ui->Frecuencia->value();
+    tiva.sendMessage(MESSAGE_TIMER_ADC,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
 }

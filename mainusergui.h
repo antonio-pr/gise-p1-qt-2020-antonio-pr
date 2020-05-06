@@ -44,6 +44,8 @@ private slots:
 
     void on_factor_promediado_currentIndexChanged(int index);
 
+    void on_Muestreo_toggled(bool checked);
+
 private:
     // funciones privadas
     void processError(const QString &s);
