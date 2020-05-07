@@ -57,6 +57,52 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
 
     ui->Muestreo->setVisible(false);
     ui->Frecuencia->setVisible(false);
+
+    //inicialización gráfica
+    ui->Grafica->setTitle("Muestreo de señales"); // Titulo de la grafica
+    ui->Grafica->setAxisTitle(QwtPlot::xBottom, "Tiempo"); // Etiqueta eje X de coordenadas
+    ui->Grafica->setAxisTitle(QwtPlot::yLeft, "Tensión (V)");    // Etiqueta eje Y de coordenadas
+    //ui->Grafica->axisAutoScale(true); // Con Autoescala
+    ui->Grafica->setAxisScale(QwtPlot::yLeft, 0, 3.3); // Escala fija
+    ui->Grafica->setAxisScale(QwtPlot::xBottom,0,512.0);
+
+    for(int i=0;i<6;i++)
+    {
+        Channels[i] = new QwtPlotCurve();
+        Channels[i]->attach(ui->Grafica);
+    }
+
+    for(int i=0;i<512;i++)
+    {
+        xVal[i]=i;
+        yVal[0][i]=0;
+        yVal[1][i]=0;
+        yVal[2][i]=0;
+        yVal[3][i]=0;
+        yVal[4][i]=0;
+        yVal[5][i]=0;
+    }
+
+    Channels[0]->setRawSamples(xVal,yVal[0],512);
+    Channels[1]->setRawSamples(xVal,yVal[1],512);
+    Channels[2]->setRawSamples(xVal,yVal[2],512);
+    Channels[3]->setRawSamples(xVal,yVal[3],512);
+    Channels[4]->setRawSamples(xVal,yVal[4],512);
+    Channels[5]->setRawSamples(xVal,yVal[5],512);
+
+    Channels[0]->setPen(QPen(Qt::red)); // Color de la curva
+    Channels[1]->setPen(QPen(Qt::cyan));
+    Channels[2]->setPen(QPen(Qt::yellow));
+    Channels[3]->setPen(QPen(Qt::green));
+    Channels[4]->setPen(QPen(Qt::magenta));
+    Channels[5]->setPen(QPen(Qt::blue));
+
+    m_Grid = new QwtPlotGrid();        // Rejilla de puntos
+    m_Grid->attach(ui->Grafica);       // que se asocia al objeto QwtPl
+    //m_Grid->setPen(QPen(Qt::white)); //Cambio de color de la rejilla
+    ui->Grafica->setAutoReplot(false); //Desactiva el autoreplot (mejora la eficiencia)
+    ui->Grafica->setVisible(false);
+    posicion=0;
 }
 
 MainUserGUI::~MainUserGUI() // Destructor de la clase
@@ -83,6 +129,22 @@ void MainUserGUI::activateRunButton()
     ui->runButton->setEnabled(true);
 }
 
+//FUNCIONES
+void MainUserGUI::resetGrafica()
+{
+    posicion=0;
+    for(int i=0;i<512;i++)
+    {
+        xVal[i]=i;
+        yVal[0][i]=0;
+        yVal[1][i]=0;
+        yVal[2][i]=0;
+        yVal[3][i]=0;
+        yVal[4][i]=0;
+        yVal[5][i]=0;
+    }
+    ui->Grafica->replot();
+}
 
 // SLOT asociada a pulsación del botón RUN
 void MainUserGUI::on_runButton_clicked()
@@ -185,6 +247,37 @@ void MainUserGUI::messageReceived(uint8_t message_type, QByteArray datos)
                 ui->lcdCh4->display(((double)parametro.chan4)*3.3/4096.0);
                 ui->lcdCh5->display(((double)parametro.chan5)*3.3/4096.0);
                 ui->lcdCh6->display(((double)parametro.chan6)*3.3/4096.0);
+                if(ui->comboBox_3->currentIndex()==3)
+                {
+                    if(posicion<512)
+                    {
+                        yVal[0][posicion]=((double)parametro.chan1)*3.3/4096.0;
+                        yVal[1][posicion]=((double)parametro.chan2)*3.3/4096.0;
+                        yVal[2][posicion]=((double)parametro.chan3)*3.3/4096.0;
+                        yVal[3][posicion]=((double)parametro.chan4)*3.3/4096.0;
+                        yVal[4][posicion]=((double)parametro.chan5)*3.3/4096.0;
+                        yVal[5][posicion]=((double)parametro.chan6)*3.3/4096.0;
+                        posicion++;
+                    }else
+                    {
+                        for(int i=0;i<511;i++)
+                        {
+                            yVal[0][i]=yVal[0][i+1];
+                            yVal[1][i]=yVal[1][i+1];
+                            yVal[2][i]=yVal[2][i+1];
+                            yVal[3][i]=yVal[3][i+1];
+                            yVal[4][i]=yVal[4][i+1];
+                            yVal[5][i]=yVal[5][i+1];
+                        }
+                        yVal[0][511]=((double)parametro.chan1)*3.3/4096.0;
+                        yVal[1][511]=((double)parametro.chan2)*3.3/4096.0;
+                        yVal[2][511]=((double)parametro.chan3)*3.3/4096.0;
+                        yVal[3][511]=((double)parametro.chan4)*3.3/4096.0;
+                        yVal[4][511]=((double)parametro.chan5)*3.3/4096.0;
+                        yVal[5][511]=((double)parametro.chan6)*3.3/4096.0;
+                    }
+                    ui->Grafica->replot();
+                }
             }
             else
             {   //Si el tamanho de los datos no es correcto emito la senhal statusChanged(...) para reportar un error
@@ -313,12 +406,16 @@ void MainUserGUI::on_comboBox_3_currentIndexChanged(int index)
 
     if(index==3)
     {
+        resetGrafica();
         ui->Muestreo->setVisible(true);
         ui->Frecuencia->setVisible(true);
+        ui->Grafica->setVisible(true);
     }else
     {
         ui->Muestreo->setVisible(false);
         ui->Frecuencia->setVisible(false);
+        ui->Grafica->setVisible(false);
+        ui->Muestreo->setChecked(false);
     }
 
     tiva.sendMessage(MESSAGE_ADC_MODE,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
@@ -334,7 +431,24 @@ void MainUserGUI::on_factor_promediado_currentIndexChanged(int index)
 void MainUserGUI::on_Muestreo_toggled(bool checked)
 {
     MESSAGE_TIMER_ADC_PARAMETER parametro;
-    parametro.on=ui->Muestreo->isChecked();
+    parametro.on=checked;
     parametro.frecuencia=ui->Frecuencia->value();
+    if(checked)
+    {
+       resetGrafica();
+    }
     tiva.sendMessage(MESSAGE_TIMER_ADC,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
+}
+
+
+
+void MainUserGUI::on_Frecuencia_valueChanged(double value)
+{
+    MESSAGE_TIMER_ADC_PARAMETER parametro;
+    if(ui->Muestreo->isChecked())
+    {
+        parametro.frecuencia=value;
+        parametro.on=true;
+        tiva.sendMessage(MESSAGE_TIMER_ADC,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
+    }
 }

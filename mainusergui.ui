@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>821</width>
+    <width>900</width>
     <height>487</height>
    </rect>
   </property>
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>30</y>
+     <y>40</y>
      <width>831</width>
      <height>411</height>
     </rect>
@@ -377,14 +377,26 @@
       <number>8</number>
      </property>
     </widget>
-    <widget class="QwtPlot" name="qwtPlot">
+    <widget class="QwtPlot" name="Grafica">
      <property name="geometry">
       <rect>
        <x>210</x>
-       <y>-1</y>
+       <y>9</y>
        <width>561</width>
-       <height>371</height>
+       <height>361</height>
       </rect>
+     </property>
+     <property name="canvasBackground">
+      <brush brushstyle="Dense1Pattern">
+       <color alpha="255">
+        <red>50</red>
+        <green>50</green>
+        <blue>50</blue>
+       </color>
+      </brush>
+     </property>
+     <property name="autoReplot">
+      <bool>false</bool>
      </property>
     </widget>
     <widget class="QCheckBox" name="Muestreo">
@@ -555,7 +567,7 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>440</y>
+     <y>450</y>
      <width>691</width>
      <height>23</height>
     </rect>
