@@ -51,6 +51,8 @@ private slots:
 
     void on_Frecuencia_valueChanged(double value);
 
+    void on_Resolucion_currentIndexChanged(int index);
+
 private:
     // funciones privadas
     void processError(const QString &s);

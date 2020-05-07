@@ -286,6 +286,56 @@ void MainUserGUI::messageReceived(uint8_t message_type, QByteArray datos)
         }
         break;
 
+        case MESSAGE_ADC8_SAMPLE:
+        {    // Este caso trata la recepcion de datos del ADC desde la TIVA
+            MESSAGE_ADC8_SAMPLE_PARAMETER parametro;
+            if (check_and_extract_command_param(datos.data(), datos.size(), &parametro, sizeof(parametro))>0)
+            {
+                ui->lcdCh1->display((parametro.chan1)*3.3/256.0);
+                ui->lcdCh2->display((parametro.chan2)*3.3/256.0);
+                ui->lcdCh3->display((parametro.chan3)*3.3/256.0);
+                ui->lcdCh4->display((parametro.chan4)*3.3/256.0);
+                ui->lcdCh5->display((parametro.chan5)*3.3/256.0);
+                ui->lcdCh6->display((parametro.chan6)*3.3/256.0);
+                if(ui->comboBox_3->currentIndex()==3)
+                {
+                    if(posicion<512)
+                    {
+                        yVal[0][posicion]=(parametro.chan1)*3.3/256.0;
+                        yVal[1][posicion]=(parametro.chan2)*3.3/256.0;
+                        yVal[2][posicion]=(parametro.chan3)*3.3/256.0;
+                        yVal[3][posicion]=(parametro.chan4)*3.3/256.0;
+                        yVal[4][posicion]=(parametro.chan5)*3.3/256.0;
+                        yVal[5][posicion]=(parametro.chan6)*3.3/256.0;
+                        posicion++;
+                    }else
+                    {
+                        for(int i=0;i<511;i++)
+                        {
+                            yVal[0][i]=yVal[0][i+1];
+                            yVal[1][i]=yVal[1][i+1];
+                            yVal[2][i]=yVal[2][i+1];
+                            yVal[3][i]=yVal[3][i+1];
+                            yVal[4][i]=yVal[4][i+1];
+                            yVal[5][i]=yVal[5][i+1];
+                        }
+                        yVal[0][511]=((double)parametro.chan1)*3.3/256.0;
+                        yVal[1][511]=((double)parametro.chan2)*3.3/256.0;
+                        yVal[2][511]=((double)parametro.chan3)*3.3/256.0;
+                        yVal[3][511]=((double)parametro.chan4)*3.3/256.0;
+                        yVal[4][511]=((double)parametro.chan5)*3.3/256.0;
+                        yVal[5][511]=((double)parametro.chan6)*3.3/256.0;
+                    }
+                    ui->Grafica->replot();
+                }
+            }
+            else
+            {   //Si el tamanho de los datos no es correcto emito la senhal statusChanged(...) para reportar un error
+                ui->statusLabel->setText(tr("Status: MSG %1, recibí %2 B y esperaba %3").arg(message_type).arg(datos.size()).arg(sizeof(parametro)));
+            }
+        }
+        break;
+
         case MESSAGE_BUTTON:
         {   //Recepcion de la respuesta al ping desde la TIVA
             MESSAGE_BUTTON_PARAMETER parametro;
@@ -407,9 +457,11 @@ void MainUserGUI::on_comboBox_3_currentIndexChanged(int index)
     if(index==3)
     {
         resetGrafica();
+        ui->Muestreo->setChecked(false);
         ui->Muestreo->setVisible(true);
         ui->Frecuencia->setVisible(true);
         ui->Grafica->setVisible(true);
+
     }else
     {
         ui->Muestreo->setVisible(false);
@@ -451,4 +503,17 @@ void MainUserGUI::on_Frecuencia_valueChanged(double value)
         parametro.on=true;
         tiva.sendMessage(MESSAGE_TIMER_ADC,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
     }
+}
+
+void MainUserGUI::on_Resolucion_currentIndexChanged(int index)
+{
+    MESSAGE_RESOLUTION_PARAMETER parametro;
+    if(index==0)
+    {
+        parametro.resolution=false;
+    }else
+    {
+        parametro.resolution=true;
+    }
+     tiva.sendMessage(MESSAGE_RESOLUTION,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
 }
