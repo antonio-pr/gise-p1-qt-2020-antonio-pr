@@ -451,6 +451,25 @@
       <string>Resolución</string>
      </property>
     </widget>
+    <widget class="Led" name="led">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>130</y>
+       <width>41</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Color Led component</string>
+     </property>
+     <property name="whatsThis">
+      <string>Led indicator</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_3">
     <attribute name="title">

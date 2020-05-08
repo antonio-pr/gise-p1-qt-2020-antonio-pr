@@ -7,6 +7,7 @@
 #include "tiva_remotelink.h"
 #include <qwt_plot_curve.h>
 #include <qwt_plot_grid.h>
+#include "remotelink_messages.h"
 
 namespace Ui {
 class MainUserGUI;

@@ -103,6 +103,8 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
     ui->Grafica->setAutoReplot(false); //Desactiva el autoreplot (mejora la eficiencia)
     ui->Grafica->setVisible(false);
     posicion=0;
+
+    ui->Resolucion->setVisible(false);
 }
 
 MainUserGUI::~MainUserGUI() // Destructor de la clase
@@ -247,16 +249,38 @@ void MainUserGUI::messageReceived(uint8_t message_type, QByteArray datos)
                 ui->lcdCh4->display(((double)parametro.chan4)*3.3/4096.0);
                 ui->lcdCh5->display(((double)parametro.chan5)*3.3/4096.0);
                 ui->lcdCh6->display(((double)parametro.chan6)*3.3/4096.0);
-                if(ui->comboBox_3->currentIndex()==3)
+
+            }
+            else
+            {   //Si el tamanho de los datos no es correcto emito la senhal statusChanged(...) para reportar un error
+                ui->statusLabel->setText(tr("Status: MSG %1, recibí %2 B y esperaba %3").arg(message_type).arg(datos.size()).arg(sizeof(parametro)));
+            }
+
+        }
+        break;
+
+        case MESSAGE_ADC8:
+        {    // Este caso trata la recepcion de datos del ADC desde la TIVA
+            MESSAGE_ADC8_PARAMETER parametro[16];
+            ui->led->setChecked(true);
+            if (check_and_extract_command_param(datos.data(), datos.size(), &parametro, sizeof(parametro))>0)
+            {
+                for(int i=0;i<16;i++)
                 {
+                    ui->lcdCh1->display(((double)parametro[i].chan1)*3.3/256.0);
+                    ui->lcdCh2->display(((double)parametro[i].chan2)*3.3/256.0);
+                    ui->lcdCh3->display(((double)parametro[i].chan3)*3.3/256.0);
+                    ui->lcdCh4->display(((double)parametro[i].chan4)*3.3/256.0);
+                    ui->lcdCh5->display(((double)parametro[i].chan5)*3.3/256.0);
+                    ui->lcdCh6->display(((double)parametro[i].chan6)*3.3/256.0);
                     if(posicion<512)
                     {
-                        yVal[0][posicion]=((double)parametro.chan1)*3.3/4096.0;
-                        yVal[1][posicion]=((double)parametro.chan2)*3.3/4096.0;
-                        yVal[2][posicion]=((double)parametro.chan3)*3.3/4096.0;
-                        yVal[3][posicion]=((double)parametro.chan4)*3.3/4096.0;
-                        yVal[4][posicion]=((double)parametro.chan5)*3.3/4096.0;
-                        yVal[5][posicion]=((double)parametro.chan6)*3.3/4096.0;
+                        yVal[0][posicion]=((double)parametro[i].chan1)*3.3/256.0;
+                        yVal[1][posicion]=((double)parametro[i].chan2)*3.3/256.0;
+                        yVal[2][posicion]=((double)parametro[i].chan3)*3.3/256.0;
+                        yVal[3][posicion]=((double)parametro[i].chan4)*3.3/256.0;
+                        yVal[4][posicion]=((double)parametro[i].chan5)*3.3/256.0;
+                        yVal[5][posicion]=((double)parametro[i].chan6)*3.3/256.0;
                         posicion++;
                     }else
                     {
@@ -269,12 +293,12 @@ void MainUserGUI::messageReceived(uint8_t message_type, QByteArray datos)
                             yVal[4][i]=yVal[4][i+1];
                             yVal[5][i]=yVal[5][i+1];
                         }
-                        yVal[0][511]=((double)parametro.chan1)*3.3/4096.0;
-                        yVal[1][511]=((double)parametro.chan2)*3.3/4096.0;
-                        yVal[2][511]=((double)parametro.chan3)*3.3/4096.0;
-                        yVal[3][511]=((double)parametro.chan4)*3.3/4096.0;
-                        yVal[4][511]=((double)parametro.chan5)*3.3/4096.0;
-                        yVal[5][511]=((double)parametro.chan6)*3.3/4096.0;
+                        yVal[0][511]=((double)parametro[i].chan1)*3.3/256.0;
+                        yVal[1][511]=((double)parametro[i].chan2)*3.3/256.0;
+                        yVal[2][511]=((double)parametro[i].chan3)*3.3/256.0;
+                        yVal[3][511]=((double)parametro[i].chan4)*3.3/256.0;
+                        yVal[4][511]=((double)parametro[i].chan5)*3.3/256.0;
+                        yVal[5][511]=((double)parametro[i].chan6)*3.3/256.0;
                     }
                     ui->Grafica->replot();
                 }
@@ -286,27 +310,29 @@ void MainUserGUI::messageReceived(uint8_t message_type, QByteArray datos)
         }
         break;
 
-        case MESSAGE_ADC8_SAMPLE:
-        {    // Este caso trata la recepcion de datos del ADC desde la TIVA
-            MESSAGE_ADC8_SAMPLE_PARAMETER parametro;
+        case MESSAGE_ADC12:
+        {
+            MESSAGE_ADC_SAMPLE_PARAMETER parametro[8];
+            ui->led->setChecked(true);
+            ui->lcdCh1->display(8.50);
             if (check_and_extract_command_param(datos.data(), datos.size(), &parametro, sizeof(parametro))>0)
             {
-                ui->lcdCh1->display((parametro.chan1)*3.3/256.0);
-                ui->lcdCh2->display((parametro.chan2)*3.3/256.0);
-                ui->lcdCh3->display((parametro.chan3)*3.3/256.0);
-                ui->lcdCh4->display((parametro.chan4)*3.3/256.0);
-                ui->lcdCh5->display((parametro.chan5)*3.3/256.0);
-                ui->lcdCh6->display((parametro.chan6)*3.3/256.0);
-                if(ui->comboBox_3->currentIndex()==3)
+                for(int i=0;i<8;i++)
                 {
+                    ui->lcdCh1->display(((double)parametro[i].chan1)*3.3/4096.0);
+                    ui->lcdCh2->display(((double)parametro[i].chan2)*3.3/4096.0);
+                    ui->lcdCh3->display(((double)parametro[i].chan3)*3.3/4096.0);
+                    ui->lcdCh4->display(((double)parametro[i].chan4)*3.3/4096.0);
+                    ui->lcdCh5->display(((double)parametro[i].chan5)*3.3/4096.0);
+                    ui->lcdCh6->display(((double)parametro[i].chan6)*3.3/4096.0);
                     if(posicion<512)
                     {
-                        yVal[0][posicion]=(parametro.chan1)*3.3/256.0;
-                        yVal[1][posicion]=(parametro.chan2)*3.3/256.0;
-                        yVal[2][posicion]=(parametro.chan3)*3.3/256.0;
-                        yVal[3][posicion]=(parametro.chan4)*3.3/256.0;
-                        yVal[4][posicion]=(parametro.chan5)*3.3/256.0;
-                        yVal[5][posicion]=(parametro.chan6)*3.3/256.0;
+                        yVal[0][posicion]=((double)parametro[i].chan1)*3.3/4096.0;
+                        yVal[1][posicion]=((double)parametro[i].chan2)*3.3/4096.0;
+                        yVal[2][posicion]=((double)parametro[i].chan3)*3.3/4096.0;
+                        yVal[3][posicion]=((double)parametro[i].chan4)*3.3/4096.0;
+                        yVal[4][posicion]=((double)parametro[i].chan5)*3.3/4096.0;
+                        yVal[5][posicion]=((double)parametro[i].chan6)*3.3/4096.0;
                         posicion++;
                     }else
                     {
@@ -319,18 +345,18 @@ void MainUserGUI::messageReceived(uint8_t message_type, QByteArray datos)
                             yVal[4][i]=yVal[4][i+1];
                             yVal[5][i]=yVal[5][i+1];
                         }
-                        yVal[0][511]=((double)parametro.chan1)*3.3/256.0;
-                        yVal[1][511]=((double)parametro.chan2)*3.3/256.0;
-                        yVal[2][511]=((double)parametro.chan3)*3.3/256.0;
-                        yVal[3][511]=((double)parametro.chan4)*3.3/256.0;
-                        yVal[4][511]=((double)parametro.chan5)*3.3/256.0;
-                        yVal[5][511]=((double)parametro.chan6)*3.3/256.0;
+                            yVal[0][511]=((double)parametro[i].chan1)*3.3/4096.0;
+                            yVal[1][511]=((double)parametro[i].chan2)*3.3/4096.0;
+                            yVal[2][511]=((double)parametro[i].chan3)*3.3/4096.0;
+                            yVal[3][511]=((double)parametro[i].chan4)*3.3/4096.0;
+                            yVal[4][511]=((double)parametro[i].chan5)*3.3/4096.0;
+                            yVal[5][511]=((double)parametro[i].chan6)*3.3/4096.0;
                     }
                     ui->Grafica->replot();
                 }
             }
             else
-            {   //Si el tamanho de los datos no es correcto emito la senhal statusChanged(...) para reportar un error
+            {
                 ui->statusLabel->setText(tr("Status: MSG %1, recibí %2 B y esperaba %3").arg(message_type).arg(datos.size()).arg(sizeof(parametro)));
             }
         }
@@ -461,6 +487,7 @@ void MainUserGUI::on_comboBox_3_currentIndexChanged(int index)
         ui->Muestreo->setVisible(true);
         ui->Frecuencia->setVisible(true);
         ui->Grafica->setVisible(true);
+        ui->Resolucion->setVisible(true);
 
     }else
     {
@@ -468,6 +495,8 @@ void MainUserGUI::on_comboBox_3_currentIndexChanged(int index)
         ui->Frecuencia->setVisible(false);
         ui->Grafica->setVisible(false);
         ui->Muestreo->setChecked(false);
+        ui->Resolucion->setVisible(false);
+        ui->Resolucion->setCurrentIndex(0);
     }
 
     tiva.sendMessage(MESSAGE_ADC_MODE,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));

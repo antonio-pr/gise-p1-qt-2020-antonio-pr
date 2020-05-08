@@ -19,7 +19,6 @@ typedef enum {
     MESSAGE_LED_GPIO,
     MESSAGE_LED_PWM_BRIGHTNESS,
     MESSAGE_ADC_SAMPLE,
-    MESSAGE_ADC8_SAMPLE,
     MESSAGE_COLOR,
     MESSAGE_MODE,
     MESSAGE_BUTTON,
@@ -28,6 +27,8 @@ typedef enum {
     MESSAGE_FACTOR,
     MESSAGE_TIMER_ADC,
     MESSAGE_RESOLUTION,
+    MESSAGE_ADC8,
+    MESSAGE_ADC12,
     //etc, etc...
 } messageTypes;
 
@@ -72,7 +73,7 @@ typedef struct
     uint8_t chan4;
     uint8_t chan5;
     uint8_t chan6;
-} MESSAGE_ADC8_SAMPLE_PARAMETER;
+} MESSAGE_ADC8_PARAMETER;
 
 typedef struct
 {
@@ -110,7 +111,7 @@ typedef struct
 typedef struct
 {
     bool on;
-    uint16_t frecuencia;
+    uint32_t frecuencia;
 }MESSAGE_TIMER_ADC_PARAMETER;
 
 typedef struct
