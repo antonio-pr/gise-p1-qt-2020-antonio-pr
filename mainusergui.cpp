@@ -101,10 +101,11 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
     m_Grid->attach(ui->Grafica);       // que se asocia al objeto QwtPl
     //m_Grid->setPen(QPen(Qt::white)); //Cambio de color de la rejilla
     ui->Grafica->setAutoReplot(false); //Desactiva el autoreplot (mejora la eficiencia)
-    ui->Grafica->setVisible(false);
+    ui->Grafica->setVisible(true);
     posicion=0;
 
     ui->Resolucion->setVisible(false);
+    ui->checkBox->setVisible(false);
 }
 
 MainUserGUI::~MainUserGUI() // Destructor de la clase
@@ -262,7 +263,7 @@ void MainUserGUI::messageReceived(uint8_t message_type, QByteArray datos)
         case MESSAGE_ADC8:
         {    // Este caso trata la recepcion de datos del ADC desde la TIVA
             MESSAGE_ADC8_PARAMETER parametro[16];
-            ui->led->setChecked(true);
+            //ui->led->setChecked(true);
             if (check_and_extract_command_param(datos.data(), datos.size(), &parametro, sizeof(parametro))>0)
             {
                 for(int i=0;i<16;i++)
@@ -284,14 +285,14 @@ void MainUserGUI::messageReceived(uint8_t message_type, QByteArray datos)
                         posicion++;
                     }else
                     {
-                        for(int i=0;i<511;i++)
+                        for(int j=0;j<511;j++)
                         {
-                            yVal[0][i]=yVal[0][i+1];
-                            yVal[1][i]=yVal[1][i+1];
-                            yVal[2][i]=yVal[2][i+1];
-                            yVal[3][i]=yVal[3][i+1];
-                            yVal[4][i]=yVal[4][i+1];
-                            yVal[5][i]=yVal[5][i+1];
+                            yVal[0][j]=yVal[0][j+1];
+                            yVal[1][j]=yVal[1][j+1];
+                            yVal[2][j]=yVal[2][j+1];
+                            yVal[3][j]=yVal[3][j+1];
+                            yVal[4][j]=yVal[4][j+1];
+                            yVal[5][j]=yVal[5][j+1];
                         }
                         yVal[0][511]=((double)parametro[i].chan1)*3.3/256.0;
                         yVal[1][511]=((double)parametro[i].chan2)*3.3/256.0;
@@ -313,47 +314,56 @@ void MainUserGUI::messageReceived(uint8_t message_type, QByteArray datos)
         case MESSAGE_ADC12:
         {
             MESSAGE_ADC_SAMPLE_PARAMETER parametro[8];
-            ui->led->setChecked(true);
-            ui->lcdCh1->display(8.50);
+            double resol;
+            //ui->led->setChecked(true);
+            //ui->lcdCh1->display(8.50);
+
             if (check_and_extract_command_param(datos.data(), datos.size(), &parametro, sizeof(parametro))>0)
             {
-                for(int i=0;i<8;i++)
-                {
-                    ui->lcdCh1->display(((double)parametro[i].chan1)*3.3/4096.0);
-                    ui->lcdCh2->display(((double)parametro[i].chan2)*3.3/4096.0);
-                    ui->lcdCh3->display(((double)parametro[i].chan3)*3.3/4096.0);
-                    ui->lcdCh4->display(((double)parametro[i].chan4)*3.3/4096.0);
-                    ui->lcdCh5->display(((double)parametro[i].chan5)*3.3/4096.0);
-                    ui->lcdCh6->display(((double)parametro[i].chan6)*3.3/4096.0);
-                    if(posicion<512)
+                    if(ui->checkBox->isChecked())
                     {
-                        yVal[0][posicion]=((double)parametro[i].chan1)*3.3/4096.0;
-                        yVal[1][posicion]=((double)parametro[i].chan2)*3.3/4096.0;
-                        yVal[2][posicion]=((double)parametro[i].chan3)*3.3/4096.0;
-                        yVal[3][posicion]=((double)parametro[i].chan4)*3.3/4096.0;
-                        yVal[4][posicion]=((double)parametro[i].chan5)*3.3/4096.0;
-                        yVal[5][posicion]=((double)parametro[i].chan6)*3.3/4096.0;
-                        posicion++;
+                        resol=1024.0;
                     }else
                     {
-                        for(int i=0;i<511;i++)
-                        {
-                            yVal[0][i]=yVal[0][i+1];
-                            yVal[1][i]=yVal[1][i+1];
-                            yVal[2][i]=yVal[2][i+1];
-                            yVal[3][i]=yVal[3][i+1];
-                            yVal[4][i]=yVal[4][i+1];
-                            yVal[5][i]=yVal[5][i+1];
-                        }
-                            yVal[0][511]=((double)parametro[i].chan1)*3.3/4096.0;
-                            yVal[1][511]=((double)parametro[i].chan2)*3.3/4096.0;
-                            yVal[2][511]=((double)parametro[i].chan3)*3.3/4096.0;
-                            yVal[3][511]=((double)parametro[i].chan4)*3.3/4096.0;
-                            yVal[4][511]=((double)parametro[i].chan5)*3.3/4096.0;
-                            yVal[5][511]=((double)parametro[i].chan6)*3.3/4096.0;
+                        resol=4096.0;
                     }
-                    ui->Grafica->replot();
-                }
+                    for(int i=0;i<8;i++)
+                    {
+                        ui->lcdCh1->display(((double)parametro[i].chan1)*3.3/resol);
+                        ui->lcdCh2->display(((double)parametro[i].chan2)*3.3/resol);
+                        ui->lcdCh3->display(((double)parametro[i].chan3)*3.3/resol);
+                        ui->lcdCh4->display(((double)parametro[i].chan4)*3.3/resol);
+                        ui->lcdCh5->display(((double)parametro[i].chan5)*3.3/resol);
+                        ui->lcdCh6->display(((double)parametro[i].chan6)*3.3/resol);
+                        if(posicion<512)
+                        {
+                            yVal[0][posicion]=((double)parametro[i].chan1)*3.3/resol;
+                            yVal[1][posicion]=((double)parametro[i].chan2)*3.3/resol;
+                            yVal[2][posicion]=((double)parametro[i].chan3)*3.3/resol;
+                            yVal[3][posicion]=((double)parametro[i].chan4)*3.3/resol;
+                            yVal[4][posicion]=((double)parametro[i].chan5)*3.3/resol;
+                            yVal[5][posicion]=((double)parametro[i].chan6)*3.3/resol;
+                            posicion++;
+                        }else
+                        {
+                            for(int j=0;j<511;j++)
+                            {
+                                yVal[0][j]=yVal[0][j+1];
+                                yVal[1][j]=yVal[1][j+1];
+                                yVal[2][j]=yVal[2][j+1];
+                                yVal[3][j]=yVal[3][j+1];
+                                yVal[4][j]=yVal[4][j+1];
+                                yVal[5][j]=yVal[5][j+1];
+                            }
+                                yVal[0][511]=((double)parametro[i].chan1)*3.3/resol;
+                                yVal[1][511]=((double)parametro[i].chan2)*3.3/resol;
+                                yVal[2][511]=((double)parametro[i].chan3)*3.3/resol;
+                                yVal[3][511]=((double)parametro[i].chan4)*3.3/resol;
+                                yVal[4][511]=((double)parametro[i].chan5)*3.3/resol;
+                                yVal[5][511]=((double)parametro[i].chan6)*3.3/resol;
+                        }
+                        ui->Grafica->replot();
+                    }
             }
             else
             {
@@ -488,6 +498,7 @@ void MainUserGUI::on_comboBox_3_currentIndexChanged(int index)
         ui->Frecuencia->setVisible(true);
         ui->Grafica->setVisible(true);
         ui->Resolucion->setVisible(true);
+        ui->checkBox->setVisible(true);
 
     }else
     {
@@ -497,6 +508,7 @@ void MainUserGUI::on_comboBox_3_currentIndexChanged(int index)
         ui->Muestreo->setChecked(false);
         ui->Resolucion->setVisible(false);
         ui->Resolucion->setCurrentIndex(0);
+        ui->checkBox->setVisible(false);
     }
 
     tiva.sendMessage(MESSAGE_ADC_MODE,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
@@ -513,7 +525,7 @@ void MainUserGUI::on_Muestreo_toggled(bool checked)
 {
     MESSAGE_TIMER_ADC_PARAMETER parametro;
     parametro.on=checked;
-    parametro.frecuencia=ui->Frecuencia->value();
+    parametro.frecuencia=(uint32_t)ui->Frecuencia->value();
     if(checked)
     {
        resetGrafica();
@@ -528,7 +540,7 @@ void MainUserGUI::on_Frecuencia_valueChanged(double value)
     MESSAGE_TIMER_ADC_PARAMETER parametro;
     if(ui->Muestreo->isChecked())
     {
-        parametro.frecuencia=value;
+        parametro.frecuencia=(uint32_t)value;
         parametro.on=true;
         tiva.sendMessage(MESSAGE_TIMER_ADC,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
     }
@@ -545,4 +557,18 @@ void MainUserGUI::on_Resolucion_currentIndexChanged(int index)
         parametro.resolution=true;
     }
      tiva.sendMessage(MESSAGE_RESOLUTION,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
+}
+
+void MainUserGUI::on_checkBox_toggled(bool checked)
+{
+    MESSAGE_SIMULATION_PARAMETER parametro;
+    if(checked)
+    {
+        parametro.simulation=true;
+    }else
+    {
+        ui->Muestreo->setChecked(false);
+        parametro.simulation=false;
+    }
+    tiva.sendMessage(MESSAGE_SIMULATION,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
 }

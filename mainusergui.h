@@ -54,6 +54,8 @@ private slots:
 
     void on_Resolucion_currentIndexChanged(int index);
 
+    void on_checkBox_toggled(bool checked);
+
 private:
     // funciones privadas
     void processError(const QString &s);
