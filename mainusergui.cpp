@@ -185,12 +185,14 @@ void MainUserGUI::on_Knob_valueChanged(double value)
 
 void MainUserGUI::on_ADCButton_clicked()
 {
-    if(ui->factor_promediado->currentText().toInt()==0)
+    MESSAGE_DATA_ADQ_CAPTURE_PARAMETER parametro;
+    if(ui->comboBox_4->currentIndex()==0)
     {
         tiva.sendMessage(MESSAGE_ADC_SAMPLE,NULL,0);
     }else
     {
-
+        parametro.frecuencia=ui->Frecuencia->value();
+        tiva.sendMessage(MESSAGE_DATA_ADQ_CAPTURE,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
     }
 
 }
@@ -409,22 +411,27 @@ void MainUserGUI::messageReceived(uint8_t message_type, QByteArray datos)
 
         case MESSAGE_DATA_ADQ:
         {
-            MESSAGE_DATA_ADQ_PARAMETER parametro[64];
+            uint16_t parametro[32];
             if (check_and_extract_command_param(datos.data(), datos.size(), &parametro, sizeof(parametro))>0)
             {
-               if(pos_osc=0)
+               if(pos_osc==0)
                {
                    resetGrafica();
                }
 
-               for(int i=0;i<64;i++)
+               for(int i=0;i<32;i++)
                {
-                   yVal[0][pos_osc]=((double)parametro[i])*3.3/4096;
+                   yVal[0][pos_osc]=((double)parametro[pos_osc])*3.3/4096;
                    pos_osc++;
                }
 
-               if(pos_osc=512)
+               if(pos_osc==512)
                {
+                   pos_osc=0;
+                   for(int i=256;i<512;i++)
+                   {
+                       yVal[0][pos_osc]=0;
+                   }
                    ui->Grafica->replot();
                }
             }else
@@ -573,11 +580,14 @@ void MainUserGUI::on_Muestreo_toggled(bool checked)
 void MainUserGUI::on_Frecuencia_valueChanged(double value)
 {
     MESSAGE_TIMER_ADC_PARAMETER parametro;
-    if(ui->Muestreo->isChecked())
+    if(ui->comboBox_4->currentIndex()==0)
     {
-        parametro.frecuencia=(uint32_t)value;
-        parametro.on=true;
-        tiva.sendMessage(MESSAGE_TIMER_ADC,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
+        if(ui->Muestreo->isChecked())
+        {
+            parametro.frecuencia=(uint32_t)value;
+            parametro.on=true;
+            tiva.sendMessage(MESSAGE_TIMER_ADC,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
+        }
     }
 }
 
