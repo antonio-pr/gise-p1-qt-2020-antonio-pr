@@ -103,6 +103,7 @@ MainUserGUI::MainUserGUI(QWidget *parent) :  // Constructor de la clase
     ui->Grafica->setAutoReplot(false); //Desactiva el autoreplot (mejora la eficiencia)
     ui->Grafica->setVisible(true);
     posicion=0;
+    pos_osc=0;
 
     ui->Resolucion->setVisible(false);
     ui->checkBox->setVisible(false);
@@ -184,7 +185,14 @@ void MainUserGUI::on_Knob_valueChanged(double value)
 
 void MainUserGUI::on_ADCButton_clicked()
 {
-    tiva.sendMessage(MESSAGE_ADC_SAMPLE,NULL,0);
+    if(ui->factor_promediado->currentText().toInt()==0)
+    {
+        tiva.sendMessage(MESSAGE_ADC_SAMPLE,NULL,0);
+    }else
+    {
+
+    }
+
 }
 
 void MainUserGUI::on_pingButton_clicked()
@@ -399,8 +407,33 @@ void MainUserGUI::messageReceived(uint8_t message_type, QByteArray datos)
         }
         break;
 
+        case MESSAGE_DATA_ADQ:
+        {
+            MESSAGE_DATA_ADQ_PARAMETER parametro[64];
+            if (check_and_extract_command_param(datos.data(), datos.size(), &parametro, sizeof(parametro))>0)
+            {
+               if(pos_osc=0)
+               {
+                   resetGrafica();
+               }
 
-        default:
+               for(int i=0;i<64;i++)
+               {
+                   yVal[0][pos_osc]=((double)parametro[i])*3.3/4096;
+                   pos_osc++;
+               }
+
+               if(pos_osc=512)
+               {
+                   ui->Grafica->replot();
+               }
+            }else
+            {
+                 ui->statusLabel->setText(tr("Status: MSG %1, recibí %2 B y esperaba %3").arg(message_type).arg(datos.size()).arg(sizeof(parametro)));
+            }
+        }
+        break;
+            default:
             //Notifico que ha llegado un tipo de mensaje desconocido
             ui->statusLabel->setText(tr("Status: Recibido mensaje desconocido %1").arg(message_type));
         break; //Innecesario
@@ -499,6 +532,7 @@ void MainUserGUI::on_comboBox_3_currentIndexChanged(int index)
         ui->Grafica->setVisible(true);
         ui->Resolucion->setVisible(true);
         ui->checkBox->setVisible(true);
+         ui->label_resolucion->setVisible(true);
 
     }else
     {
@@ -509,6 +543,7 @@ void MainUserGUI::on_comboBox_3_currentIndexChanged(int index)
         ui->Resolucion->setVisible(false);
         ui->Resolucion->setCurrentIndex(0);
         ui->checkBox->setVisible(false);
+         ui->label_resolucion->setVisible(false);
     }
 
     tiva.sendMessage(MESSAGE_ADC_MODE,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
@@ -517,7 +552,7 @@ void MainUserGUI::on_comboBox_3_currentIndexChanged(int index)
 void MainUserGUI::on_factor_promediado_currentIndexChanged(int index)
 {
     MESSAGE_FACTOR_PARAMETER parametro;
-    parametro.factor=ui->factor_promediado->currentText().toInt();
+    parametro.factor=index;
     tiva.sendMessage(MESSAGE_FACTOR,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
 }
 
@@ -571,4 +606,39 @@ void MainUserGUI::on_checkBox_toggled(bool checked)
         parametro.simulation=false;
     }
     tiva.sendMessage(MESSAGE_SIMULATION,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
+}
+
+void MainUserGUI::on_comboBox_4_currentIndexChanged(int index)
+{
+    MESSAGE_DATA_ADQ_MODE_PARAMETER parametro;
+    if(index==1)
+    {
+        ui->Frecuencia->setLowerBound(100);
+        ui->Frecuencia->setUpperBound(1000000);
+        //ui->Grafica->setVisible(false);
+        ui->Frecuencia->setVisible(true);
+        ui->checkBox->setVisible(false);
+        ui->Muestreo->setVisible(false);
+       // ui->Muestreo->setChecked(false);
+        ui->ADCButton->setVisible(true);
+        ui->Resolucion->setVisible(false);
+        ui->label_resolucion->setVisible(false);
+        ui->factor_promediado->setVisible(false);
+        ui->label_factor->setVisible(false);
+        ui->comboBox_3->setVisible(false);
+        ui->label_trigger->setVisible(false);
+        //ui->comboBox_3->setCurrentIndex(0);
+    }else
+    {
+        ui->Frecuencia->setVisible(true);
+        ui->Frecuencia->setLowerBound(1);
+        ui->Frecuencia->setUpperBound(8000);
+        ui->factor_promediado->setVisible(true);
+        ui->comboBox_3->setVisible(true);
+        ui->label_trigger->setVisible(true);
+        ui->label_factor->setVisible(true);
+    }
+
+    parametro.mode=index;
+    tiva.sendMessage(MESSAGE_DATA_ADQ_MODE,QByteArray::fromRawData((char *)&parametro,sizeof(parametro)));
 }

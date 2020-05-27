@@ -56,6 +56,8 @@ private slots:
 
     void on_checkBox_toggled(bool checked);
 
+    void on_comboBox_4_currentIndexChanged(int index);
+
 private:
     // funciones privadas
     void processError(const QString &s);
@@ -75,6 +77,7 @@ private:
     QwtPlotCurve *Channels[6]; //Curvas
     QwtPlotGrid  *m_Grid; //Cuadricula
     int posicion;
+    int pos_osc;
 };
 
 #endif // GUIPANEL_H

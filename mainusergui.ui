@@ -17,13 +17,13 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>40</y>
+     <y>30</y>
      <width>831</width>
      <height>411</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -130,6 +130,102 @@
      </item>
     </widget>
    </widget>
+   <widget class="QWidget" name="tab_3">
+    <attribute name="title">
+     <string>Botones</string>
+    </attribute>
+    <widget class="Led" name="led_izq">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>90</y>
+       <width>71</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Color Led component</string>
+     </property>
+     <property name="whatsThis">
+      <string>Led indicator</string>
+     </property>
+    </widget>
+    <widget class="Led" name="led_der">
+     <property name="geometry">
+      <rect>
+       <x>320</x>
+       <y>90</y>
+       <width>81</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Color Led component</string>
+     </property>
+     <property name="whatsThis">
+      <string>Led indicator</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>70</y>
+       <width>47</width>
+       <height>13</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Botón izq</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_4">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>70</y>
+       <width>47</width>
+       <height>13</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Botón Der</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_2">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>120</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Sondear</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBox_2">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>40</y>
+       <width>69</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>sondeo</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>auto</string>
+      </property>
+     </item>
+    </widget>
+   </widget>
    <widget class="QWidget" name="tab_2">
     <attribute name="title">
      <string>ADC</string>
@@ -138,9 +234,9 @@
      <property name="geometry">
       <rect>
        <x>100</x>
-       <y>40</y>
-       <width>75</width>
-       <height>23</height>
+       <y>70</y>
+       <width>81</width>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
@@ -271,7 +367,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>100</y>
+       <y>120</y>
        <width>69</width>
        <height>22</height>
       </rect>
@@ -302,13 +398,13 @@
       </property>
      </item>
     </widget>
-    <widget class="QLabel" name="label_5">
+    <widget class="QLabel" name="label_factor">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>80</y>
-       <width>47</width>
-       <height>13</height>
+       <y>100</y>
+       <width>51</width>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
@@ -319,7 +415,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>40</y>
+       <y>70</y>
        <width>81</width>
        <height>21</height>
       </rect>
@@ -345,13 +441,13 @@
       </property>
      </item>
     </widget>
-    <widget class="QLabel" name="label_6">
+    <widget class="QLabel" name="label_trigger">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>20</y>
-       <width>47</width>
-       <height>13</height>
+       <y>52</y>
+       <width>41</width>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
@@ -406,7 +502,7 @@
      <property name="geometry">
       <rect>
        <x>100</x>
-       <y>40</y>
+       <y>50</y>
        <width>70</width>
        <height>17</height>
       </rect>
@@ -422,7 +518,7 @@
      <property name="geometry">
       <rect>
        <x>110</x>
-       <y>100</y>
+       <y>120</y>
        <width>69</width>
        <height>22</height>
       </rect>
@@ -438,11 +534,11 @@
       </property>
      </item>
     </widget>
-    <widget class="QLabel" name="label_7">
+    <widget class="QLabel" name="label_resolucion">
      <property name="geometry">
       <rect>
        <x>110</x>
-       <y>80</y>
+       <y>100</y>
        <width>61</width>
        <height>21</height>
       </rect>
@@ -451,31 +547,12 @@
       <string>Resolución</string>
      </property>
     </widget>
-    <widget class="Led" name="led">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>130</y>
-       <width>41</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>Color Led component</string>
-     </property>
-     <property name="whatsThis">
-      <string>Led indicator</string>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
-    </widget>
     <widget class="QCheckBox" name="checkBox">
      <property name="geometry">
       <rect>
        <x>100</x>
        <y>10</y>
-       <width>111</width>
+       <width>71</width>
        <height>20</height>
       </rect>
      </property>
@@ -483,99 +560,23 @@
       <string>Simulacion</string>
      </property>
     </widget>
-   </widget>
-   <widget class="QWidget" name="tab_3">
-    <attribute name="title">
-     <string>Botones</string>
-    </attribute>
-    <widget class="Led" name="led_izq">
+    <widget class="QComboBox" name="comboBox_4">
      <property name="geometry">
       <rect>
-       <x>230</x>
-       <y>90</y>
-       <width>71</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>Color Led component</string>
-     </property>
-     <property name="whatsThis">
-      <string>Led indicator</string>
-     </property>
-    </widget>
-    <widget class="Led" name="led_der">
-     <property name="geometry">
-      <rect>
-       <x>320</x>
-       <y>90</y>
-       <width>81</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>Color Led component</string>
-     </property>
-     <property name="whatsThis">
-      <string>Led indicator</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_3">
-     <property name="geometry">
-      <rect>
-       <x>240</x>
-       <y>70</y>
-       <width>47</width>
-       <height>13</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Botón izq</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_4">
-     <property name="geometry">
-      <rect>
-       <x>340</x>
-       <y>70</y>
-       <width>47</width>
-       <height>13</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Botón Der</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_2">
-     <property name="geometry">
-      <rect>
-       <x>70</x>
-       <y>120</y>
-       <width>75</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Sondear</string>
-     </property>
-    </widget>
-    <widget class="QComboBox" name="comboBox_2">
-     <property name="geometry">
-      <rect>
-       <x>80</x>
-       <y>40</y>
+       <x>10</x>
+       <y>20</y>
        <width>69</width>
        <height>22</height>
       </rect>
      </property>
      <item>
       <property name="text">
-       <string>sondeo</string>
+       <string>Data Adq</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>auto</string>
+       <string>Osciloscopio</string>
       </property>
      </item>
     </widget>
